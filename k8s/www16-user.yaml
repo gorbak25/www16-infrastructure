@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: arch-test
+  namespace: www16-intranet
 spec:
   replicas: 1
   selector:
@@ -25,8 +26,9 @@ spec:
               name: root-tmp
             - mountPath: /run
               name: root-run
-            - mountPath: /sys/fs/cgroup:ro
+            - mountPath: /sys/fs/cgroup
               name: cgroup
+              readOnly: true
             - mountPath: /bin
               name: root
               subPath: bin

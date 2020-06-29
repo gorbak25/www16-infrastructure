@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  namespace: www16-intranet
+  name: www16-intranet-openvpn-pv
+  labels:
+    app: openvpn
+    release: www16-vpn
+spec:
+  capacity:
+    storage: 10M
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/mnt/www16-vpn-pv"
+

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import shlex
 
 def help():
     print("""
@@ -40,7 +41,7 @@ def help():
 if 'SSH_ORIGINAL_COMMAND' not in os.environ:
     help()
 
-args = [e for e in os.environ['SSH_ORIGINAL_COMMAND'].split(' ') if len(e)>0]
+args = shlex.split(os.environ['SSH_ORIGINAL_COMMAND'])
 if len(args) < 3 or len(args) > 4:
     help()
 

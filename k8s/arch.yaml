@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: arch-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: arch-test
+  template:
+    metadata:
+      labels:
+        app: arch-test
+    spec:
+      containers:
+        - name: arch-test
+          image: k8s.gcr.io/pause
+          imagePullPolicy: "IfNotPresent"
+          command: [ "/lib/systemd/systemd", "--unit=sysinit.target" ]
+          env:
+            - name: CONTAINER
+              value: docker
+          volumeMounts:
+            - mountPath: /tmp
+              name: root-tmp
+            - mountPath: /run
+              name: root-run
+            - mountPath: /sys/fs/cgroup:ro
+              name: cgroup
+            - mountPath: /bin
+              name: root
+              subPath: bin
+            - mountPath: /boot
+              name: root
+              subPath: boot
+            - mountPath: /etc
+              name: root
+              subPath: etc
+            - mountPath: /home
+              name: root
+              subPath: home
+            - mountPath: /lib
+              name: root
+              subPath: lib
+            - mountPath: /lib64
+              name: root
+              subPath: lib64
+            - mountPath: /opt
+              name: root
+              subPath: opt
+            - mountPath: /root
+              name: root
+              subPath: root
+            - mountPath: /sbin
+              name: root
+              subPath: sbin
+            - mountPath: /srv
+              name: root
+              subPath: srv
+            - mountPath: /usr
+              name: root
+              subPath: usr
+            - mountPath: /var
+              name: root
+              subPath: var
+          securityContext:
+            privileged: false
+            procMount: Default
+            allowPrivilegeEscalation: false
+      volumes:
+        - name: root
+          hostPath:
+            path: /mnt/www16-archlinux/
+            type: Directory
+        - name: root-tmp
+          emptyDir:
+            medium: Memory
+        - name: root-run
+          emptyDir:
+            medium: Memory
+        - name: cgroup
+          hostPath:
+            path: /sys/fs/cgroup
+            type: DirectoryOrCreate
+      dnsPolicy: ClusterFirst

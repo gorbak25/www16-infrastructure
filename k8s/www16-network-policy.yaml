@@ -10,11 +10,24 @@ spec:
   - Egress
   egress:
   - to:
+    # Everything in the www16-intranet namespace is allowed
+    - podSelector:
+        {}
+    # Internet traffic except the cluster and my private LAN
     - ipBlock:
         cidr: 0.0.0.0/0
         except:
           - 10.244.0.0/16
           - 10.96.0.0/12
           - 192.168.1.0/24
-    - podSelector:
-        {}
+  - to:
+    # Cluster DNS resolver is allowed
+    - namespaceSelector:
+        matchLabels:
+          networking/namespace: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+      - protocol: UDP
+        port: 53

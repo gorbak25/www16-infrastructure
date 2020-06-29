@@ -27,8 +27,13 @@ def help():
     Snapshots your container
     - rollback [snapshot_id]
     Rollbacks your container to the given id
-    - expose [prefix]
-    Redirects http traffic from prefix.gorbak25.eu to your container on port 80
+    - expose [your_prefix]
+    Redirects http traffic from your_prefix.gorbak25.eu to your container on port 80
+    - hide
+    Stops traffic from your_prefix.gorbak25.eu from reaching you
+    - authorize_key [ssh-pubkey]
+    Appends the given data to /home/user/.ssh/authorized_keys
+    Remember to snapshot your container before doing this!
     """)
     exit(0)
 

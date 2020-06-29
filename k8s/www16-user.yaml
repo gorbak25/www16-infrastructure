@@ -21,6 +21,14 @@ spec:
           env:
             - name: CONTAINER
               value: docker
+          resources:
+            # TODO: Is this reasonable?
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
           volumeMounts:
             - mountPath: /tmp
               name: root-tmp

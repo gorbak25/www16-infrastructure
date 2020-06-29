@@ -68,7 +68,8 @@ spec:
           securityContext:
             privileged: false
             procMount: Default
-            allowPrivilegeEscalation: false
+            # or else sudo won't work :P
+            #allowPrivilegeEscalation: false
       volumes:
         - name: root
           hostPath:

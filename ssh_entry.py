@@ -9,9 +9,9 @@ import pyzfscmds.utility
 from config import *
 
 try:
-    authorized = json.loads(open(AUTH_FILENAME, "rb").read())
+    authorized = json.loads(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), AUTH_FILENAME), "rb").read())
 except:
-    print("Tool broken. Contact admin :P")
+    print("Tool broken. Contact the raccoon :P")
     exit(0)
 
 @contextmanager

@@ -17,7 +17,7 @@ spec:
         - name: www16-user
           image: k8s.gcr.io/pause
           imagePullPolicy: "IfNotPresent"
-          command: [ "/lib/systemd/systemd", "--unit=sysinit.target" ]
+          command: [ "/lib/systemd/systemd", "--unit=multi-user.target" ]
           env:
             - name: CONTAINER
               value: docker

@@ -227,7 +227,7 @@ elif cmd == "rollback":
             print(ex)
 
         if does_clone_exist(client_dataset):
-            print("Error: rootfs exists and couldn't be deleted")
+            print("Error: rootfs exists and couldn't be deleted. Make sure your container is fully stopped.")
         else:
             create_rootfs(base_dataset, client_dataset, client_dataset_mountpath)
 

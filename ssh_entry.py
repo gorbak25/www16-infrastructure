@@ -159,7 +159,18 @@ if cmd == "start":
     # Ok we got the rootfs - render the deployment template and push it to the k8s apiserver
     deployment_spec = render_deployment_template(user, client_dataset_mountpath)
     p = Popen(["kubectl", "apply", "-f", "-"], stdout=PIPE, stdin=PIPE, stderr=PIPE, env={"KUBECONFIG": "/home/gorbak25/.kube/config"})
-    print(p.communicate(input=deployment_spec.encode("utf-8"))[0])
+    print(p.communicate(input=deployment_spec.encode("utf-8"))[0].decode('utf=8'))
+elif cmd == "stop":
+    deployment_spec = render_deployment_template(user, client_dataset_mountpath)
+    p = Popen(["kubectl", "delete", "-f", "-"], stdout=PIPE, stdin=PIPE, stderr=PIPE, env={"KUBECONFIG": "/home/gorbak25/.kube/config"})
+    print(p.communicate(input=deployment_spec.encode("utf-8"))[0].decode('utf=8'))
+elif cmd == "status":
+    if not does_clone_exist(client_dataset):
+        print("RootFS not present")
+    else:
+        p = Popen(["kubectl", "get", "pod", "-o", "wide", "-n", "www16-intranet", "-l", f"app=www16-user-{user}"], stdout=PIPE, stdin=PIPE, stderr=PIPE,
+                  env={"KUBECONFIG": "/home/gorbak25/.kube/config"})
+        print(p.communicate(input=b"")[0].decode('utf=8'))
 elif cmd == "list_snapshots":
     try:
         snap = pyzfscmds.cmd.zfs_list(client_dataset, zfs_types=["snapshot"], columns=['name']).splitlines()

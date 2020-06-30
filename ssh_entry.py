@@ -168,7 +168,7 @@ elif cmd == "rollback":
         base_dataset = os.path.join(DATASET_CONTAINER_ROOT, DATASET_BASE_NAME)
         # Try to delete the client dataset
         try:
-            pyzfscmds.cmd.zfs_destroy(client_dataset, verbose=True)
+            pyzfscmds.cmd.zfs_destroy(client_dataset, verbose=True, recursive_children=True)
         except Exception as ex:
             print(f"Warning: Failed to delete {client_dataset}")
             print(ex)

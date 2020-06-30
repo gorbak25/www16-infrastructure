@@ -3,7 +3,7 @@ import os
 import datetime
 import shlex
 import json
-import hashlib
+import hmac
 from contextlib import contextmanager
 import pyzfscmds.cmd
 import pyzfscmds.utility
@@ -102,7 +102,7 @@ if user not in authorized:
     print("No such user!")
     exit(0)
 
-if not hashlib.hmac.compare_digest(token, authorized[user]):
+if not hmac.compare_digest(token, authorized[user]):
     print("Invalid token!")
     exit(0)
 

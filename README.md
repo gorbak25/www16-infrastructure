@@ -1,4 +1,4 @@
-So i don't forget:
+So I won't forget:
 ```
 Match user www16
 #	ChrootDirectory %h

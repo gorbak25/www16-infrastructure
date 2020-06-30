@@ -3,6 +3,7 @@ import os
 import datetime
 import shlex
 import json
+import hashlib
 from contextlib import contextmanager
 import pyzfscmds.cmd
 import pyzfscmds.utility
@@ -39,23 +40,6 @@ def format_datetime(dt):
     with setlocale():
         formated_time: string = dt.strftime(snap_suffix_time_format)
     return formated_time
-
-def constant_time_compare(val1, val2):
-    """
-    Returns True if the two strings are equal, False otherwise.
-
-    The time taken is independent of the number of characters that match.
-
-    For the sake of simplicity, this function executes in constant time only
-    when the two strings have the same length. It short-circuits when they
-    have different lengths.
-    """
-    if len(val1) != len(val2):
-        return False
-    result = 0
-    for x, y in zip(val1, val2):
-        result |= x ^ y
-    return result == 0
 
 def help():
     print("""
@@ -118,7 +102,7 @@ if user not in authorized:
     print("No such user!")
     exit(0)
 
-if not constant_time_compare(token, authorized[user]):
+if not hashlib.hmac.compare_digest(token, authorized[user]):
     print("Invalid token!")
     exit(0)
 

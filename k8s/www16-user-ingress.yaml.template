@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: www16-user-$WWW_USER
+  namespace: www16-intranet
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: www.$WWW_USER.wwwx.me
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: www16-user-$WWW_USER
+          servicePort: 80
+  - host: $WWW_USER.wwwx.me
+    http:
+      paths:
+        - path: /
+          backend:
+            serviceName: www16-user-$WWW_USER
+            servicePort: 80

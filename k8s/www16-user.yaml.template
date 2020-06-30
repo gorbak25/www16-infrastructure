@@ -94,3 +94,16 @@ spec:
             path: /sys/fs/cgroup
             type: DirectoryOrCreate
       dnsPolicy: ClusterFirst
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: www16-user-$WWW_USER
+  namespace: www16-intranet
+spec:
+  clusterIP: None
+  selector:
+    app: www16-user-$WWW_USER
+  ports:
+  - name: http
+    port: 80

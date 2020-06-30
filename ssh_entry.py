@@ -60,7 +60,7 @@ def help():
     connecting to the appropriate network where you may access your container.
 
     Usage:
-    ssh www16@gorbak25.eu username token [COMMAND]
+    ssh www16@wwwx.me username token [COMMAND]
     Where username and token were provided to you by the admin and command is one of:
     - start
     Starts your container if not already started.
@@ -70,6 +70,12 @@ def help():
     
     - status
     Gets the status information of your container
+        
+    - expose
+    Redirects http traffic from username.wwwx.me to your container on port 80
+    
+    - hide
+    Stops traffic from username.wwwx.me from reaching you
     
     - list_snapshots
     Lists snapshots of your container
@@ -79,18 +85,12 @@ def help():
     
     - rollback [snapshot_id]
     Rollbacks your container to the given id
-    
-    - expose [your_prefix]
-    Redirects http traffic from your_prefix.gorbak25.eu to your container on port 80
-    
-    - hide
-    Stops traffic from your_prefix.gorbak25.eu from reaching you
-    
+
     - authorize_key [ssh-pubkey]
     Puts the given pubkey to /home/user/.ssh/authorized_keys
     It might be a good idea to snapshot your container before doing this!
     Example:
-    ssh www16@gorbak25.eu authorize_key \'ssh-rsa AAAAB3Nz...CmNiJU= gorbak25@ra.cc\'
+    ssh www16@wwwx.me authorize_key \'ssh-rsa AAAAB3Nz...CmNiJU= gorbak25@ra.cc\'
     """)
     exit(0)
 
@@ -126,6 +126,10 @@ def render_deployment_template(user, user_rootfs):
     template = open(os.path.join(this_dir, "k8s/www16-user.yaml.template"), "r").read()
     return template.replace("$WWW_USER_ROOTFS", user_rootfs).replace("$WWW_USER", user)
 
+def render_ingress_template(user):
+    template = open(os.path.join(this_dir, "k8s/www16-user-ingress.yaml.template"), "r").read()
+    return template.replace("$WWW_USER", user)
+
 if 'SSH_ORIGINAL_COMMAND' not in os.environ:
     help()
 
@@ -152,6 +156,7 @@ client_dataset = os.path.join(DATASET_CONTAINER_ROOT, DATASET_CLIENT_NAME, user)
 client_dataset_mountpath = os.path.join(DATASET_CLEINT_MOUNT, user)
 base_dataset = os.path.join(DATASET_CONTAINER_ROOT, DATASET_BASE_NAME)
 
+# POD DEPLOYMENT COMMANDS
 if cmd == "start":
     if not does_clone_exist(client_dataset):
         create_rootfs(base_dataset, client_dataset, client_dataset_mountpath)
@@ -171,6 +176,18 @@ elif cmd == "status":
         p = Popen(["kubectl", "get", "pod", "-o", "wide", "-n", "www16-intranet", "-l", f"app=www16-user-{user}"], stdout=PIPE, stdin=PIPE, stderr=PIPE,
                   env={"KUBECONFIG": "/home/gorbak25/.kube/config"})
         print(p.communicate(input=b"")[0].decode('utf=8'))
+
+# INGRESS COMMANDS
+elif cmd == "expose":
+    deployment_spec = render_ingress_template(user)
+    p = Popen(["kubectl", "apply", "-f", "-"], stdout=PIPE, stdin=PIPE, stderr=PIPE, env={"KUBECONFIG": "/home/gorbak25/.kube/config"})
+    print(p.communicate(input=deployment_spec.encode("utf-8"))[0].decode('utf=8'))
+elif cmd == "hide":
+    deployment_spec = render_ingress_template(user)
+    p = Popen(["kubectl", "delete", "-f", "-"], stdout=PIPE, stdin=PIPE, stderr=PIPE, env={"KUBECONFIG": "/home/gorbak25/.kube/config"})
+    print(p.communicate(input=deployment_spec.encode("utf-8"))[0].decode('utf=8'))
+
+# ROOTFS MANAGMENT
 elif cmd == "list_snapshots":
     try:
         snap = pyzfscmds.cmd.zfs_list(client_dataset, zfs_types=["snapshot"], columns=['name']).splitlines()

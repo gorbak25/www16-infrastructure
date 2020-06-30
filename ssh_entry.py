@@ -109,7 +109,7 @@ if not hmac.compare_digest(token, authorized[user]):
 
 if cmd == "list_snapshots":
     try:
-        snap = pyzfscmds.cmd.zfs_list(os.path.join(DATASET_CONTAINER_ROOT, DATASET_CLIENT_NAME, user), zfs_types=["snapshot"], columns=['name'])
+        snap = pyzfscmds.cmd.zfs_list(os.path.join(DATASET_CONTAINER_ROOT, DATASET_CLIENT_NAME, user), zfs_types=["snapshot"], columns=['name']).splitlines()
     except:
         snap = []
     print(snap)

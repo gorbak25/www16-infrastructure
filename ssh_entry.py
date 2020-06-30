@@ -123,8 +123,8 @@ def banhammer(user):
     exit(0)
 
 def render_deployment_template(user, user_rootfs):
-    template = open(os.path.join(this_dir, "k8s/www16-user.yaml.template"), "rb").read()
-    return template.replace(b"$WWW_USER_ROOTFS", user_rootfs).replace(b"$WWW_USER", user)
+    template = open(os.path.join(this_dir, "k8s/www16-user.yaml.template"), "r").read()
+    return template.replace("$WWW_USER_ROOTFS", user_rootfs).replace("$WWW_USER", user)
 
 if 'SSH_ORIGINAL_COMMAND' not in os.environ:
     help()
@@ -159,7 +159,7 @@ if cmd == "start":
     # Ok we got the rootfs - render the deployment template and push it to the k8s apiserver
     deployment_spec = render_deployment_template(user, client_dataset_mountpath)
     p = Popen(["kubectl", "apply", "-f", "-"], stdout=PIPE, stdin=PIPE, stderr=PIPE, env={"KUBECONFIG": "/home/gorbak25/.kube/config"})
-    print(p.communicate(input=deployment_spec)[0])
+    print(p.communicate(input=deployment_spec.encode("utf-8"))[0])
 elif cmd == "list_snapshots":
     try:
         snap = pyzfscmds.cmd.zfs_list(client_dataset, zfs_types=["snapshot"], columns=['name']).splitlines()

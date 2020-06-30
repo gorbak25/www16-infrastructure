@@ -17,7 +17,7 @@ from config import *
 this_dir = os.path.dirname(os.path.abspath(__file__))
 
 try:
-    authorized = json.loads(open(os.path.join(this_dir, AUTH_FILENAME)), "rb").read()
+    authorized = json.loads(open(os.path.join(this_dir, AUTH_FILENAME), "rb").read())
 except:
     print("Tool broken. Contact the raccoon :P")
     exit(0)
@@ -122,7 +122,7 @@ def banhammer(user):
     exit(0)
 
 def render_deployment_template(user, user_rootfs):
-    template = open(os.join(this_dir, "k8s/www16-user.yaml.template")).read()
+    template = open(os.join(this_dir, "k8s/www16-user.yaml.template"), "r").read()
     return template.replate("$WWW_USER", user).replace("$WWW_USER_ROOTFS", user_rootfs)
 
 if 'SSH_ORIGINAL_COMMAND' not in os.environ:

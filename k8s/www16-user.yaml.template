@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: arch-test
+  name: www16-user-$WWW_USER
   namespace: www16-intranet
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: arch-test
+      app: www16-user-$WWW_USER
   template:
     metadata:
       labels:
-        app: arch-test
+        app: www16-user-$WWW_USER
     spec:
       containers:
-        - name: arch-test
+        - name: www16-user
           image: k8s.gcr.io/pause
           imagePullPolicy: "IfNotPresent"
           command: [ "/lib/systemd/systemd", "--unit=sysinit.target" ]
@@ -81,7 +81,7 @@ spec:
       volumes:
         - name: root
           hostPath:
-            path: /mnt/www16-archlinux/
+            path: $WWW_USER_ROOTFS
             type: Directory
         - name: root-tmp
           emptyDir:

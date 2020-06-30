@@ -5,6 +5,8 @@ import shlex
 import json
 import hmac
 import locale
+import string
+import random
 from contextlib import contextmanager
 import pyzfscmds.cmd
 import pyzfscmds.utility
@@ -168,7 +170,7 @@ elif cmd == "rollback":
         base_dataset = os.path.join(DATASET_CONTAINER_ROOT, DATASET_BASE_NAME)
         # Try to delete the client dataset
         try:
-            pyzfscmds.cmd.zfs_destroy(client_dataset, verbose=True, recursive_children=True)
+            pyzfscmds.cmd.zfs_destroy(client_dataset, verbose = True, recursive_children = True)
         except Exception as ex:
             print(f"Warning: Failed to delete {client_dataset}")
             print(ex)
@@ -185,10 +187,14 @@ elif cmd == "rollback":
             pass
 
         # Ok the dataset is gone, Time to create a new clone
-        s = format_datetime(datetime.datetime.now())
+        s = ''.join(random.choices(string.ascii_uppercase, k=16))
         pyzfscmds.cmd.zfs_snapshot(base_dataset, s)
-        pyzfscmds.cmd.zfs_clone(f"{base_dataset}@{s}", client_dataset, properties=[f"mountpoint={client_dataset_mountpath}"])
-        print("Created a fresh ROOTFS just for you *raccoon noises*")
+        try:
+            pyzfscmds.cmd.zfs_clone(f"{base_dataset}@{s}", client_dataset, properties=[f"mountpoint={client_dataset_mountpath}"])
+        finally:
+            # Mark the snapshot for deletion so when the clone is destroyed this will get nuked
+            pyzfscmds.cmd.zfs_destroy_snapshot(f"{base_dataset}@{s}", defer = True)
+        print("Created a fresh ROOTFS just for you\n*raccoon noises*")
 else:
     print("No such command!")
 exit(0)

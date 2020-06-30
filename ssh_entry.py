@@ -111,7 +111,7 @@ if cmd == "list_snapshots":
         snap = pyzfscmds.cmd.zfs_list(os.path.join(DATASET_CONTAINER_ROOT, DATASET_CLIENT_NAME, user), zfs_types=["snapshot"])
     except:
         snap = []
-    snap = map(snap, lambda x: x.split("@")[1])
+    snap = map(lambda x: x.split("@")[1], snap)
 
     print("Current snapshots of your container:")
     for s in snap:

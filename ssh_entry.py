@@ -112,7 +112,6 @@ if cmd == "list_snapshots":
         snap = pyzfscmds.cmd.zfs_list(os.path.join(DATASET_CONTAINER_ROOT, DATASET_CLIENT_NAME, user), zfs_types=["snapshot"], columns=['name']).splitlines()
     except:
         snap = []
-    print(snap)
     snap = map(lambda x: x.split("@")[1], snap)
 
     print("Current snapshots of your container:")
@@ -159,7 +158,7 @@ elif cmd == "rollback":
     if to != "BASE":
         client_dataset = f"{os.path.join(DATASET_CONTAINER_ROOT, DATASET_CLIENT_NAME, user)}@{to}"
         try:
-            pyzfscmds.cmd.zfs_rollback(client_dataset)
+            pyzfscmds.cmd.zfs_rollback(client_dataset, destroy_between = True)
             print(f"Rolled back to {to}")
         except:
             print("Failed to rollback :( Perhaps stop the container first?")

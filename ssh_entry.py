@@ -255,7 +255,7 @@ elif cmd == "authorize_key":
     if not stat.S_ISREG(lstat_info.st_mode):
         banhammer(user)
 
-    os.write(fd, client_keydata)
+    os.write(fd, client_keydata.encode('utf-8'))
     os.close(fd)
 
 else:

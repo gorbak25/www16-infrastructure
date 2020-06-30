@@ -122,7 +122,7 @@ def banhammer(user):
     exit(0)
 
 def render_deployment_template(user, user_rootfs):
-    template = open(os.join(this_dir, "k8s/www16-user.yaml.template"), "r").read()
+    template = open(os.path.join(this_dir, "k8s/www16-user.yaml.template"), "r").read()
     return template.replate("$WWW_USER", user).replace("$WWW_USER_ROOTFS", user_rootfs)
 
 if 'SSH_ORIGINAL_COMMAND' not in os.environ:

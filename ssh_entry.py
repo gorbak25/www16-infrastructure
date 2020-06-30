@@ -39,7 +39,7 @@ def parse_time(origin_property: str, fmt: str = "%Y-%m-%d-%H-%f",
 
 def format_datetime(dt):
     with setlocale():
-        formated_time: string = dt.strftime(snap_suffix_time_format)
+        formated_time: string = dt.strftime("%Y-%m-%d-%H-%f")
     return formated_time
 
 def help():

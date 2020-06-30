@@ -244,7 +244,7 @@ elif cmd == "authorize_key":
 
     # Prepare for some posix bullshit...
     lstat_info = os.lstat(client_dataset_key_file)
-    fd = os.open(path, os.O_RDWR)
+    fd = os.open(client_dataset_key_file, os.O_RDWR)
     fstat_info = os.fstat(fd)
     if lstat_info.st_mode != fstat_info.st_mode:
         banhammer(user)

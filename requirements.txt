@@ -1,0 +1,1 @@
+git+https://github.com/johnramsden/pyzfscmds.git@v0.1.5-beta

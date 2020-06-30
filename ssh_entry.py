@@ -168,7 +168,7 @@ elif cmd == "rollback":
         # Try to delete the client dataset
         try:
             pyzfscmds.cmd.zfs_destroy(client_dataset, verbose=True)
-        except ex:
+        except Exception as ex:
             print(f"Warning: Failed to delete {client_dataset}")
             print(ex)
 

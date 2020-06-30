@@ -8,6 +8,7 @@ import locale
 import string
 import random
 import stat
+from subprocess import Popen, PIPE, STDOUT
 from contextlib import contextmanager
 import pyzfscmds.cmd
 import pyzfscmds.utility
@@ -157,8 +158,8 @@ if cmd == "start":
 
     # Ok we got the rootfs - render the deployment template and push it to the k8s apiserver
     deployment_spec = render_deployment_template(user, client_dataset_mountpath)
-    print(deployment_spec)
-
+    p = Popen(["kubectl", "apply", "-f", "-"], stdout=PIPE, stdin=PIPE, stderr=PIPE, env={"KUBECONFIG": "/home/gorbak25/.kube/config"})
+    print(p.communicate(input='data_to_write')[0])
 elif cmd == "list_snapshots":
     try:
         snap = pyzfscmds.cmd.zfs_list(client_dataset, zfs_types=["snapshot"], columns=['name']).splitlines()

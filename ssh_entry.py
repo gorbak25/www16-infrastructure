@@ -186,7 +186,7 @@ elif cmd == "status":
 elif cmd == "shell":
     if len(args) != 4:
         print("Please provide the pod id from the status command!")
-    elif not os.isatty(sys.stdout.fileno):
+    elif not sys.stdout.isatty():
         print("A tty is required! Please pass -t to ssh")
     elif not args[3].startswith(f"www16-user-{user}"):
         print("*confused raccoon noises*")

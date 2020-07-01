@@ -8,6 +8,7 @@ import locale
 import string
 import random
 import stat
+import sys
 from subprocess import Popen, PIPE, STDOUT
 from contextlib import contextmanager
 import pyzfscmds.cmd

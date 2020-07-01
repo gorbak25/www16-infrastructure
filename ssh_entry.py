@@ -90,7 +90,11 @@ def help():
     Puts the given pubkey to /home/user/.ssh/authorized_keys
     It might be a good idea to snapshot your container before doing this!
     Example:
-    ssh www16@wwwx.me authorize_key \'ssh-rsa AAAAB3Nz...CmNiJU= gorbak25@ra.cc\'
+    ssh www16@wwwx.me username token authorize_key \\'ssh-rsa AAAAB3Nz...CmNiJU= gorbak25@ra.cc\\'
+    
+    - shell [pod-id]
+    If your container exists and is running then gives you an interactive shell
+    You can get the pod-id from querying the status 
     """)
     exit(0)
 
@@ -176,6 +180,17 @@ elif cmd == "status":
         p = Popen(["kubectl", "get", "pod", "-o", "wide", "-n", "www16-intranet", "-l", f"app=www16-user-{user}"], stdout=PIPE, stdin=PIPE, stderr=PIPE,
                   env={"KUBECONFIG": "/home/gorbak25/.kube/config"})
         print(p.communicate(input=b"")[0].decode('utf=8'))
+
+# Shell
+elif cmd == "shell":
+    if len(args) != 4:
+        print("Please provide the pod id from the status command!")
+    elif not os.isatty(sys.stdout.fileno):
+        print("A tty is required! Please pass -t to ssh")
+    elif not args[3].startswith(f"www16-user-{user}"):
+        print("*confused raccoon noises*")
+    else:
+        os.execve("kubectl", ["kubectl", "exec", "-n", "www16-intranet", args[3], "-it", "--", "/bin/bash"], {"KUBECONFIG": "/home/gorbak25/.kube/config"})
 
 # INGRESS COMMANDS
 elif cmd == "expose":

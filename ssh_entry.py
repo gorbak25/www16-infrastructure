@@ -191,7 +191,7 @@ elif cmd == "shell":
     elif not args[3].startswith(f"www16-user-{user}"):
         print("*confused raccoon noises*")
     else:
-        os.execve("kubectl", ["kubectl", "exec", "-n", "www16-intranet", args[3], "-it", "--", "/bin/bash"], {"PATH": os.environ["PATH"], "KUBECONFIG": "/home/gorbak25/.kube/config"})
+        os.execve("/usr/bin/kubectl", ["/usr/bin/kubectl", "exec", "-n", "www16-intranet", args[3], "-it", "--", "/bin/bash"], {"PATH": os.environ["PATH"], "KUBECONFIG": "/home/gorbak25/.kube/config"})
 
 # INGRESS COMMANDS
 elif cmd == "expose":

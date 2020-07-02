@@ -1,0 +1,192 @@
+---
+# Source: collabora-code/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: www16-collabora-code
+data:
+  username: YWRtaW4=
+  password: ZXhhbXBsZXBhc3M=
+---
+# Source: collabora-code/templates/configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: www16-collabora-code
+data:
+  DONT_GEN_SSL_CERT: "true"
+  dictionaries: de_DE en_GB en_US es_ES fr_FR it nl pt_BR pt_PT ru pl_PL
+  domain: nx11865\\.your-storageshare\\.de
+  extra_params: --o:ssl.termination=true --o:ssl.enable=false
+  server_name: collabora\.wwwx\.me
+---
+# Source: collabora-code/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: www16-collabora-code
+  labels:
+    app.kubernetes.io/name: collabora-code
+    helm.sh/chart: collabora-code-1.0.6
+    app.kubernetes.io/instance: www16-collabora-code
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9980
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: collabora-code
+    app.kubernetes.io/instance: www16-collabora-code
+---
+# Source: collabora-code/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: www16-collabora-code
+  labels:
+    app.kubernetes.io/name: collabora-code
+    helm.sh/chart: collabora-code-1.0.6
+    app.kubernetes.io/instance: www16-collabora-code
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: collabora-code
+      app.kubernetes.io/instance: www16-collabora-code
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: collabora-code
+        app.kubernetes.io/instance: www16-collabora-code
+    spec:
+      containers:
+        - name: collabora-code
+          image: "collabora/code:4.0.3.1"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DONT_GEN_SSL_CERT
+              valueFrom:
+                configMapKeyRef:
+                  name: www16-collabora-code
+                  key: DONT_GEN_SSL_CERT
+            - name: dictionaries
+              valueFrom:
+                configMapKeyRef:
+                  name: www16-collabora-code
+                  key: dictionaries
+            - name: domain
+              valueFrom:
+                configMapKeyRef:
+                  name: www16-collabora-code
+                  key: domain
+            - name: extra_params
+              valueFrom:
+                configMapKeyRef:
+                  name: www16-collabora-code
+                  key: extra_params
+            - name: server_name
+              valueFrom:
+                configMapKeyRef:
+                  name: www16-collabora-code
+                  key: server_name
+            - name: username
+              valueFrom:
+                secretKeyRef:
+                  name: www16-collabora-code
+                  key: username
+            - name: password
+              valueFrom:
+                secretKeyRef:
+                  name: www16-collabora-code
+                  key: password
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: http
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 3
+          ports:
+            - name: http
+              containerPort: 9980
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+            requests:
+              cpu: 1000m
+              memory: 1024Mi
+          securityContext:
+            allowPrivilegeEscalation: true
+            capabilities:
+              add:
+              - MKNOD
+---
+# Source: collabora-code/templates/ingress.yaml
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: www16-collabora-code
+  labels:
+    app.kubernetes.io/name: collabora-code
+    helm.sh/chart: collabora-code-1.0.6
+    app.kubernetes.io/instance: www16-collabora-code
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts:
+        - "collabora.wwwx.me"
+      secretName: www16-collabora-tls-secret
+  rules:
+    - host: "collabora.wwwx.me"
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: www16-collabora-code
+              servicePort: http
+---
+# Source: collabora-code/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "www16-collabora-code-test-connection"
+  labels:
+    app.kubernetes.io/name: collabora-code
+    helm.sh/chart: collabora-code-1.0.6
+    app.kubernetes.io/instance: www16-collabora-code
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args:  ['www16-collabora-code:9980']
+  restartPolicy: Never

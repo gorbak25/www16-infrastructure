@@ -1,0 +1,14 @@
+# This is just a smoke test before pushing it to k8s
+version: "3.8"
+services:
+  web:
+    build: .
+    ports:
+    - "8000:80"
+    environment:
+      DJANGO_API_KEY: test
+    volumes:
+      - type: bind
+        source: ../
+        target: /share
+  

@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: www16-auth-connector
+  namespace: www16-intranet
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: www16-auth-connector
+  template:
+    metadata:
+      labels:
+        app: www16-auth-connector
+    spec:
+      containers:
+        - name: www16-auth-connector
+          image: www16-auth-connector:v0.0.1
+          imagePullPolicy: "IfNotPresent"
+          env:
+            - name: DJANGO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: www16-django-api-key
+                  key: api-key
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "52Mi"
+            limits:
+              cpu: "50m"
+              memory: "52Mi"
+          volumeMounts:
+            - mountPath: /share
+              name: db
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+      volumes:
+        - name: db
+          hostPath:
+            path: /home/www16/www16-infrastructure
+            type: Directory
+      dnsPolicy: ClusterFirst

@@ -5,6 +5,7 @@ metadata:
   namespace: www16-intranet
 spec:
   replicas: 1
+  automountServiceAccountToken: false
   selector:
     matchLabels:
       app: www16-user-$WWW_USER
